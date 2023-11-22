@@ -1,0 +1,28 @@
+[tool.black]
+line-length = 88
+target-version = ['py38']
+
+[tool.isort]
+profile = "black"
+
+[tool.pytest.ini_options]
+# TODO: check if these can be removed when updating to flask 2.0
+filterwarnings = [
+    # DeprecationWarning: 'flask.json_available' is deprecated and will be removed in
+    # version 2.0.0.
+    "ignore:'flask.json_available' is deprecated .*:DeprecationWarning",
+    # FutureWarning: Implicit (flask) JSON serialization will change in the next
+    # major version. This is triggered because a response body is being serialized
+    # as JSON even though the mimetype is not a JSON type. This will be replaced by
+    # something that is mimetype-specific and may raise an error instead of silently
+    # converting everything to JSON. Please make sure to specify media/mime types
+    # in your specs.
+    "ignore:Implicit .* JSON serialization will change in the next major version.*:FutureWarning",
+]
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+
+[tool.semantic_release]
+version_source = "tag_only"
+prerelease_tag = "alpha"
