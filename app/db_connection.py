@@ -1,6 +1,6 @@
 from pymongo.mongo_client import MongoClient
 from urllib.parse import quote_plus
-import ssl
+
 
 class MongoDBConnection:
     def __init__(self, db_user, uri_password, database_name, collection_name):
@@ -10,11 +10,11 @@ class MongoDBConnection:
         self.client = MongoClient(uri, ssl=True)
         self.db = self.client[database_name]
         self.collection = self.db[collection_name]
-        self._start_connection()
+        self._ping()
 
-    def _start_connection(self):
+    def _ping(self):
         try:
-            self.client.admin.command('ping')
+            self.client.admin.command("ping")
             print("Pinged your deployment. You successfully connected to MongoDB!")
         except Exception as e:
             print(e)

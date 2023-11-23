@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-import os 
+import os
 from dotenv import load_dotenv
 
 
