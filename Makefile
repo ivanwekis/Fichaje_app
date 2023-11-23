@@ -46,7 +46,6 @@ help:
 
 	@echo "functional_test"
 	@echo "       Run functional tests. \
-	Use VPN to run properly."
 	@echo
 
 init:
@@ -65,4 +64,4 @@ functional_test:
 	@source .venv/bin/activate && pytest ${TARGET_FUNCTIONAL_TEST} && deactivate
 
 run:
-	@source .venv/bin/activate && uvicorn app.app:app --reload && deactivate
+	@source .venv/bin/activate && uvicorn app.main:app --reload && deactivate

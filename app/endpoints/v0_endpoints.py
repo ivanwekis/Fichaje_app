@@ -1,13 +1,16 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import HTTPException, APIRouter
 from app.classes.usuario import Usuario
+from app.db_connection import MongoDBConnection
+from app import URI, DB_NAME, COLLECTION_NAME
 
-app = FastAPI()
+router = APIRouter()
 
-
-# Almacén temporal para los usuarios (solo con fines demostrativos)
+#mongo_db = MongoDBConnection(URI,DB_NAME,COLLECTION_NAME)
 usuarios_db = {}
 
-@app.post("/v0/fichar")
+
+
+@router.post("/v0/fichar")
 async def fichar(usuario: Usuario):
     # Verifica si el usuario ya existe en la base de datos
     if usuario.user in usuarios_db:
@@ -19,7 +22,7 @@ async def fichar(usuario: Usuario):
     return {"mensaje": f"{usuario.user} ha fichado correctamente"}
 
 
-@app.post("/v0/desfichar")
+@router.post("/v0/desfichar")
 async def fichar(usuario: Usuario):
     # Verifica si el usuario ya existe en la base de datos
     if usuario.user in usuarios_db:
