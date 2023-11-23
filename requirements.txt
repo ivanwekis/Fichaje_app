@@ -1,7 +1,8 @@
 fastapi
 pydantic
 pytest
-pymongo
+pymongo[srv]
 python-dotenv
 uvicorn
+certifi
 flake8

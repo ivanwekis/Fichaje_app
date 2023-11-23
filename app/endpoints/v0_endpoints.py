@@ -1,13 +1,14 @@
 from fastapi import HTTPException, APIRouter
 from app.classes.usuario import Usuario
 from app.db_connection import MongoDBConnection
-from app import URI, DB_NAME, COLLECTION_NAME
+from app import DB_USER, URI_PASSWORD, DB_NAME, COLLECTION_NAME 
+
 
 router = APIRouter()
 
-#mongo_db = MongoDBConnection(URI,DB_NAME,COLLECTION_NAME)
-usuarios_db = {}
+mongo = MongoDBConnection(DB_USER, URI_PASSWORD, DB_NAME, COLLECTION_NAME)
 
+usuarios_db = {}
 
 
 @router.post("/v0/fichar")
