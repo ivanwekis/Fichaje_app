@@ -1,31 +1,61 @@
 from fastapi import HTTPException, APIRouter
-from app.classes.usuario import Usuario
+from app.classes.user import User
 from app.db_connection import MongoDBConnection
-from app import DB_USER, URI_PASSWORD, DB_NAME, COLLECTION_NAME
+from app import DB_USER, URI_PASSWORD, DB_NAME, USERS_COLLECTION
 import logging
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
-mongo = MongoDBConnection(DB_USER, URI_PASSWORD, DB_NAME, COLLECTION_NAME)
+mongo_users = MongoDBConnection(DB_USER, URI_PASSWORD, DB_NAME, USERS_COLLECTION)
+mongo_collections = MongoDBConnection(DB_USER, URI_PASSWORD, DB_NAME)
 
 
 @router.post("/v0/fichar")
-async def fichar(usuario: Usuario):
-    logger.info(f"Usuario: {usuario.user}")
-    # Verifica si el usuario ya existe en la base de datos
-    if mongo.find_user({"user": usuario.user}):
-        raise HTTPException(status_code=400, detail="El usuario ya existe")
+async def fichar(user: User):
+    logger.info(f"user: {user.user}")
+    mongo_users.insert_user({"user": user.user})
+    if mongo_users.find_user({"user": user.user}):
+        mongo_collections._set_collection(user.user)
+        date = datetime.now()
+        if mongo_collections.find_user({"date": date.strftime("%d/%m/%Y")}):
+            raise HTTPException(status_code=400, detail="El user ya ha fichado hoy")
+        document = {
+            "action": "fichar",
+            "date": date.strftime("%d/%m/%Y"),
+            "time": date.strftime("%H:%M:%S"),
+        }
+        mongo_collections.insert_user(document)
+        return {"mensaje": f"{user.user} ha fichado correctamente"}
     else:
-        mongo.insert_user(usuario.dict())
-        return {"mensaje": f"{usuario.user} ha fichado correctamente"}
+        raise HTTPException(status_code=400, detail="El user no existe en la BD")
 
 
 @router.post("/v0/desfichar")
-async def desfichar(usuario: Usuario):
-    logger.debug(f"Usuario: {usuario.user}")
-    # Verifica si el usuario ya existe en la base de datos
-    response = mongo.delete_user({"user": usuario.user})
-    if response.deleted_count == 0:
-        raise HTTPException(status_code=404, detail="El usuario no existe")
-    return {"mensaje": f"{usuario.user} ha desfichado correctamente"}
+async def desfichar(user: User):
+    logger.debug(f"user: {user.user}")
+    # Verifica si el user ya existe en la base de datos
+    if mongo_users.find_user({"user": user.user}):
+        mongo_collections._set_collection(user.user)
+        date = datetime.now()
+        if mongo_collections.find_user(
+            {"date": date.strftime("%d/%m/%Y"), "action": "fichar"}
+        ):
+            if mongo_collections.find_user(
+                {"date": date.strftime("%d/%m/%Y"), "action": "desfichar"}
+            ):
+                raise HTTPException(
+                    status_code=400, detail="El user ya ha desfichado hoy"
+                )
+            document = {
+                "action": "desfichar",
+                "date": date.strftime("%d/%m/%Y"),
+                "time": date.strftime("%H:%M:%S"),
+            }
+            mongo_collections.insert_user(document)
+            return {"mensaje": f"{user.user} ha desfichado correctamente"}
+        else:
+            raise HTTPException(
+                status_code=400, detail="El user no ha fichado aun hoy"
+            )

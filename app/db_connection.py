@@ -3,14 +3,16 @@ from urllib.parse import quote_plus
 
 
 class MongoDBConnection:
-    def __init__(self, db_user, uri_password, database_name, collection_name):
+    def __init__(self, db_user, uri_password, database_name, collection_name=None):
         db_user = quote_plus(db_user)
         uri_password = quote_plus(uri_password)
         uri = f"mongodb+srv://{db_user}:{uri_password}@cluster0.srdnijs.mongodb.net/"
         self.client = MongoClient(uri, ssl=True)
         self.db = self.client[database_name]
-        self.collection = self.db[collection_name]
-        self._ping()
+
+        if collection_name is not None:
+            self.collection = self.db[collection_name]
+            self._ping()
 
     def _ping(self):
         try:
@@ -18,6 +20,9 @@ class MongoDBConnection:
             print("Pinged your deployment. You successfully connected to MongoDB!")
         except Exception as e:
             print(e)
+
+    def _set_collection(self, collection_name):
+        self.collection = self.db[collection_name]
 
     def find_user(self, filtro):
         return self.collection.find_one(filtro)
