@@ -1,4 +1,4 @@
-from fastapi import HTTPException, APIRouter,  Depends
+from fastapi import HTTPException, APIRouter, Depends
 from app.classes.user import User
 from app.db_connection import MongoDBConnection
 from app import DB_USER, URI_PASSWORD, DB_NAME, USERS_COLLECTION

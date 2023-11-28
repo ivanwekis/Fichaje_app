@@ -58,7 +58,7 @@ build:
 	@docker build . -t ${PROJECT_NAME}-${ENV} 
 
 test:
-	@. .venv/bin/activate && pytest ${COV} ${TARGET_TEST} && deactivate
+	@. .venv/bin/activate && pytest ${COV} && deactivate
 
 functional_test:
 	@. .venv/bin/activate && pytest ${TARGET_FUNCTIONAL_TEST} && deactivate

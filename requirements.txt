@@ -1,6 +1,7 @@
 fastapi[all] 
 pydantic
 pytest
+pytest-cov
 pymongo[srv]
 python-dotenv
 python-jose

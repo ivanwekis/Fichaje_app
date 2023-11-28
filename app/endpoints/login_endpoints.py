@@ -22,9 +22,7 @@ def login(user: LoginUser):
 
 
 @router.post("/reset-password")
-def reset_password(email: str):
+def reset_password(user: LoginUser):
     # Aquí iría la lógica para enviar un correo de recuperación
     # de contraseña al usuario
     return {"message": "Password reset email sent"}
-
-
