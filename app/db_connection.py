@@ -1,6 +1,8 @@
 from pymongo.mongo_client import MongoClient
 from urllib.parse import quote_plus
+import logging
 
+log = logging.getLogger(__name__)
 
 class MongoDBConnection:
     def __init__(self, db_user, uri_password, database_name, collection_name=None):
@@ -17,6 +19,7 @@ class MongoDBConnection:
     def _ping(self):
         try:
             self.client.admin.command("ping")
+            log.info("Pinged your deployment. You successfully connected to MongoDB!")
             print("Pinged your deployment. You successfully connected to MongoDB!")
         except Exception as e:
             print(e)

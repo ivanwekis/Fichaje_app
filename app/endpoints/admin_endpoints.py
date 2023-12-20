@@ -16,8 +16,8 @@ mongo_users = MongoDBConnection(DB_USER, URI_PASSWORD, DB_NAME, USERS_COLLECTION
 def create_user(user: CreateUser):
     logger.info(f"user: {user.username}")
     date = datetime.now()
-    if mongo_users.find_user({"username": user.username}):
-        raise HTTPException(status_code=400, detail="El user ya existe en la BD")
+    if mongo_users.find_user({"$or": [{"username": user.username}, {"email": user.email}]}):
+        raise HTTPException(status_code=400, detail="El nombre de usuario/email ya existe en la BD")
     user = user.dict()
     user.update({"date": date.strftime("%d/%m/%Y"), "time": date.strftime("%H:%M:%S")})
     mongo_users.insert_user(user)
