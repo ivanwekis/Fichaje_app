@@ -33,6 +33,14 @@ class MongoDBConnection:
     def insert_user(self, usuario):
         # Inserta un nuevo usuario en la colección
         return self.collection.insert_one(usuario)
+    
+    def insert_register(self, usuario):
+        # Inserta un nuevo usuario en la colección
+        return self.collection.insert_one(usuario)
+    
+    def update_one_register(self, filtro, nuevo_valor):
+        # Actualiza la información de un usuario que cumple con el filtro
+        return self.collection.update_one(filtro, {"$set": nuevo_valor})
 
     def update_user(self, filtro, nuevo_valor):
         # Actualiza la información de un usuario que cumple con el filtro
@@ -41,6 +49,9 @@ class MongoDBConnection:
     def delete_user(self, filtro):
         # Elimina un usuario que cumple con el filtro
         return self.collection.delete_one(filtro)
+    
+    def find_all_sort_by_date(self, filtro):
+        return self.collection.find(filtro).sort("date", -1)
 
     def close_connection(self):
         self.client.close()

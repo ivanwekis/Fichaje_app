@@ -25,9 +25,8 @@ async def fichar(user: User, token: str = Depends(oauth2_scheme)):
         if mongo_collections.find_user({"date": date.strftime("%d/%m/%Y")}):
             raise HTTPException(status_code=400, detail="El user ya ha fichado hoy")
         document = {
-            "action": "fichar",
             "date": date.strftime("%d/%m/%Y"),
-            "time": date.strftime("%H:%M:%S"),
+            "start": date.strftime("%H:%M"),
         }
         mongo_collections.insert_user(document)
         return {"mensaje": f"{user.username} ha fichado correctamente"}
@@ -44,20 +43,13 @@ async def desfichar(user: User, token: str = Depends(oauth2_scheme)):
         mongo_collections._set_collection(user.username)
         date = datetime.now()
         if mongo_collections.find_user(
-            {"date": date.strftime("%d/%m/%Y"), "action": "fichar"}
+            {"date": date.strftime("%d/%m/%Y")}
         ):
-            if mongo_collections.find_user(
-                {"date": date.strftime("%d/%m/%Y"), "action": "desfichar"}
-            ):
-                raise HTTPException(
-                    status_code=400, detail="El user ya ha desfichado hoy"
-                )
+            filter = {"date": date.strftime("%d/%m/%Y")}    
             document = {
-                "action": "desfichar",
-                "date": date.strftime("%d/%m/%Y"),
-                "time": date.strftime("%H:%M:%S"),
+                "finish": date.strftime("%H:%M")
             }
-            mongo_collections.insert_user(document)
+            mongo_collections.update_one_register(filter, document)
             return {"mensaje": f"{user.username} ha desfichado correctamente"}
         else:
             raise HTTPException(status_code=400, detail="No ha fichado aun hoy")
