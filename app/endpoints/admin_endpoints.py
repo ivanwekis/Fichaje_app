@@ -3,6 +3,7 @@ from app.classes.user import User
 from app.classes.create_user import CreateUser
 from app.db_connection import MongoDBConnection
 from app import DB_USER, URI_PASSWORD, DB_NAME, USERS_COLLECTION
+from app.security import passwords
 import logging
 from datetime import datetime
 
@@ -18,6 +19,7 @@ def create_user(user: CreateUser):
     date = datetime.now()
     if mongo_users.find_user({"$or": [{"username": user.username}, {"email": user.email}]}):
         raise HTTPException(status_code=400, detail="El nombre de usuario/email ya existe en la BD")
+    user.password = passwords.hash_password(user.password)
     user = user.dict()
     user.update({"date": date.strftime("%d/%m/%Y"), "time": date.strftime("%H:%M:%S")})
     mongo_users.insert_user(user)

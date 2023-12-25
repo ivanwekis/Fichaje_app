@@ -4,7 +4,7 @@ from app.db_connection import MongoDBConnection
 from app import DB_USER, URI_PASSWORD, DB_NAME, USERS_COLLECTION
 import logging
 from datetime import datetime
-from app.security import oauth2_scheme, get_current_user
+from app.security.security import oauth2_scheme, get_current_user
 
 
 logger = logging.getLogger(__name__)
@@ -18,7 +18,6 @@ mongo_collections = MongoDBConnection(DB_USER, URI_PASSWORD, DB_NAME)
 async def fichar(user: User, token: str = Depends(oauth2_scheme)):
     get_current_user(token, username=user.username)
     logger.info(f"user: {user.username}")
-    mongo_users.insert_user({"user": user.username})
     if mongo_users.find_user({"user": user.username}):
         mongo_collections._set_collection(user.username)
         date = datetime.now()
