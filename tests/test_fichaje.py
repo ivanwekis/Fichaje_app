@@ -1,7 +1,7 @@
 import pytest
 from fastapi.testclient import TestClient
 from main import app  # reemplace esto con la ruta a su aplicación FastAPI
-from app.classes.user import User
+from app.models.user import User
 
 client = TestClient(app)
 TOKEN= "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlRlc3R1c2VyIi" \

@@ -51,7 +51,11 @@ class MongoDBConnection:
         return self.collection.delete_one(filtro)
     
     def find_all_sort_by_date(self, filtro):
-        return self.collection.find(filtro).sort("date", -1)
+        return self.collection.find(filtro).sort("_id", -1).limit(12)
+    
+    def insert_documents(self, documents):
+        # Inserta varios documentos en la colección
+        return self.collection.insert_many(documents)
 
     def close_connection(self):
         self.client.close()
