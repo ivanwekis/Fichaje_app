@@ -25,6 +25,7 @@ async def fichar(user: User, token: str = Depends(oauth2_scheme)):
             raise HTTPException(status_code=400, detail="El user ya ha fichado hoy")
         document = {
             "_id": date,
+            "string_id": date.strftime("%d/%m/%Y%H:%M:%S"),
             "date": date.strftime("%d/%m/%Y"),
             "start": date.strftime("%H:%M"),
             "finish": "-"

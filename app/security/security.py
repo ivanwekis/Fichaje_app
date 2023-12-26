@@ -1,8 +1,10 @@
+import token
 from app import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
 from datetime import datetime, timedelta
 from jose import jwt, JWTError
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
+from app.models.user import User
 
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
@@ -24,10 +26,20 @@ def get_current_user(token: str = Depends(oauth2_scheme), username=None):
     )
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        user_payload: str = payload.get("username")
-        if user_payload is None or (user_payload != username):
-            raise credentials_exception
+        user_payload: str = payload.get("username", None)
+        if user_payload != None:
+            if  (user_payload != username):
+                raise credentials_exception
+        else:
+            return {"username": username}
     except JWTError:
         raise credentials_exception
 
     return {"username": username}
+
+
+def get_user(token: str = Depends(oauth2_scheme)):
+     payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+     user_payload: str = payload.get("username", None)
+     return User(username=user_payload)
+
