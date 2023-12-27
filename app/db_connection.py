@@ -50,8 +50,8 @@ class MongoDBConnection:
         # Elimina un usuario que cumple con el filtro
         return self.collection.delete_one(filtro)
     
-    def find_all_sort_by_date(self, filtro):
-        return self.collection.find(filtro).sort("_id", -1).limit(12)
+    def find_all_sort_by_date(self, filtro, page):
+        return self.collection.find(filtro).sort("_id", -1).limit(12).skip(12*(page-1))
     
     def insert_documents(self, documents):
         # Inserta varios documentos en la colección

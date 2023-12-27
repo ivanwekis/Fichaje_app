@@ -21,7 +21,8 @@ def login(user: LoginUser):
     if not passwords.verify_password(user.password, user_data["password"].decode("utf-8")):
         raise HTTPException(status_code=401, detail="Incorrect username or password")
     access_token = create_access_token(user.username)
-    return {"access_token": access_token, "token_type": "bearer"}
+    print(user_data)
+    return {"access_token": access_token, "token_type": "bearer", "name": user_data["name"]}
     
 
 

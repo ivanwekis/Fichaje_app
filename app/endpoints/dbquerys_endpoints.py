@@ -16,12 +16,12 @@ mongo_users = MongoDBConnection(DB_USER, URI_PASSWORD, DB_NAME, USERS_COLLECTION
 mongo_collections = MongoDBConnection(DB_USER, URI_PASSWORD, DB_NAME)
 
 
-@router.post("/v2/getregisters")
-async def get_registers(user: User, token: str = Depends(oauth2_scheme)):
+@router.post("/v2/getregisters/{page}")
+async def get_registers(page: int, user: User, token: str = Depends(oauth2_scheme)):
     get_current_user(token, username=user.username)
     if mongo_users.find_user({"username": user.username}):
         mongo_collections._set_collection(user.username)
-        registers = mongo_collections.find_all_sort_by_date({})
+        registers = mongo_collections.find_all_sort_by_date({}, page)
         registers_list = []
         for register in registers:
             if "finish" not in register:
@@ -49,3 +49,4 @@ async def modify_register(register: Register, token: str = Depends(oauth2_scheme
        
     else:
         raise HTTPException(status_code=403, detail="Incorrect username.")
+    
