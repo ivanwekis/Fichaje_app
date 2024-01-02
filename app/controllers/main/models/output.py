@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
 
-class Finish(BaseModel):
+class Output(BaseModel):
     reason: str = None
-    finish: str = None
+    output: str = None

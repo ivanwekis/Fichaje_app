@@ -19,13 +19,11 @@ for i in range(500):
     finish = datetime.time(17, randon_number2, 0)
     fecha_datetime = datetime.datetime.combine(date, datetime.datetime.min.time())
     document = {"_id":fecha_datetime, "string_id":fecha_datetime.strftime("%d/%m/%Y%H:%M:%S"), 
-                "date": date.strftime("%d/%m/%Y"), "start": start.strftime("%H:%M"), "finish": finish.strftime("%H:%M"),
-                "modified": False, "nightShift": False}
-    randon_number3 = random.randint(1, 15)
-    randon_number4 = random.randint(1, 10)
-    randon_number5 = random.randint(1, 10)
-    if i%randon_number3 == 0:
-        document["finish"] = "-"
+                "date": date.strftime("%d/%m/%Y"), "outputs": [{"output":start.strftime("%H:%M"), "reason":"-"}], 
+                "inputs": [{"input": finish.strftime("%H:%M")}],"modified": False, "nightShift": False}
+    randon_number3 = random.randint(1, 20)
+    randon_number4 = random.randint(1, 12)
+    randon_number5 = random.randint(1, 12)
     
     if i%randon_number4 == 0:
         document["modified"] = True

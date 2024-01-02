@@ -2,7 +2,7 @@ import re
 from app.models.modify_user import ModifyUser
 from fastapi import HTTPException, APIRouter, Depends
 from app.models.user import User
-from app.controllers.main.models.register import Register
+from app.controllers.main.models.register import Register, Input, Output
 from app.db_connection import MongoDBConnection
 from app import DB_USER, URI_PASSWORD, DB_NAME, USERS_COLLECTION
 import logging
@@ -24,13 +24,15 @@ async def get_registers(page: int, user: User, token: str = Depends(oauth2_schem
     if mongo_users.find_user({"username": user.username}):
         mongo_collections._set_collection(user.username)
         registers_doc = mongo_collections.find_12_sort_by_date({}, page)
+        
         registers_list = []
         for register_doc in registers_doc:
+            print(register_doc)
             register = Register()
             register.string_id = register_doc["string_id"]
             register.date = register_doc["date"]
-            register.start = register_doc["start"]
-            register.finish = register_doc["finish"]
+            register.inputs = register_doc["inputs"]
+            register.outputs = register_doc["outputs"]
             if "modified" in register_doc:
                 register.modified = register_doc["modified"]
             if "nightShift" in register_doc:
@@ -42,10 +44,23 @@ async def get_registers(page: int, user: User, token: str = Depends(oauth2_schem
 @router.put("/v2/modifyRegister")
 async def modify_register(register: Register, token: str = Depends(oauth2_scheme)):
     user = get_user(token)
+    print(register)
+    output_list = []
+    input_list = []
+    for output in register.outputs:
+        output_obj = Output()
+        output_obj.output = output.output
+        output_obj.reason = output.reason
+        output_list.append(output_obj.dict())
+    for input in register.inputs:
+        input_obj = Input()
+        input_obj.input = input.input
+        input_list.append(input_obj.dict())
+
     if mongo_users.find_user({"username": user.username}):
         mongo_collections._set_collection(user.username)
         if mongo_collections.update_one_register({"string_id": register.string_id}, 
-        {"start": register.start, "finish": register.finish, "modified": True}):
+        {"inputs": input_list, "outputs": output_list, "modified": True}):
             
             return {"message":"The register has been modified successfully."}
         else:
@@ -54,6 +69,16 @@ async def modify_register(register: Register, token: str = Depends(oauth2_scheme
     else:
         raise HTTPException(status_code=403, detail="Incorrect username.")
     
+
+@router.get("/v2/getregisterslength")
+async def get_registers_lenght(token: str = Depends(oauth2_scheme)):
+    user = get_user(token)
+    if mongo_users.find_user({"username": user.username}):
+        mongo_collections._set_collection(user.username)
+        return {"registers_length": mongo_collections.registers_length()}
+    else:
+        raise HTTPException(status_code=404, detail="There was an error getting the registers length.")
+
 
 @router.get("/v2/getuserinfo")
 async def get_register(token: str = Depends(oauth2_scheme)):
