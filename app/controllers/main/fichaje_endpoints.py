@@ -1,6 +1,6 @@
 from fastapi import HTTPException, APIRouter, Depends
-from app.models.start import Start
-from app.models.finish import Finish
+from app.controllers.main.models.start import Start
+from app.controllers.main.models.finish import Finish
 from app.db_connection import MongoDBConnection
 from app import DB_USER, URI_PASSWORD, DB_NAME, USERS_COLLECTION
 import logging
@@ -17,19 +17,18 @@ mongo_collections = MongoDBConnection(DB_USER, URI_PASSWORD, DB_NAME)
 
 @router.post("/v0/fichar")
 async def fichar(start: Start, token: str = Depends(oauth2_scheme)):
-    print(start)
     user = get_user(token)
     if mongo_users.find_user({"username": user.username}):
         mongo_collections._set_collection(user.username)
         date = datetime.now()
         if mongo_collections.find_user({"date": date.strftime("%d/%m/%Y")}):
             raise HTTPException(status_code=400, detail="El user ya ha fichado hoy")
-        start._id = date
         start.string_id = date.strftime("%d/%m/%Y%H:%M:%S")
         start.date = date.strftime("%d/%m/%Y")
         start.start = date.strftime("%H:%M")
-        start.finish = "-"
-        mongo_collections.insert_user(start.dict())
+        start_dict = start.dict()
+        start_dict.update({"_id": date})
+        mongo_collections.insert_user(start_dict)
         return {"mensaje": f"{user.username} ha fichado correctamente"}
     else:
         raise HTTPException(status_code=400, detail="El user no existe en la BD")

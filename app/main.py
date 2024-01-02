@@ -1,5 +1,10 @@
+from app.controllers.admin import admin_endpoints
+from app.controllers.login import login_endpoints
+from app.controllers.main import dbquerys_endpoints
+from app.controllers.main import fichaje_endpoints
+
 from app import app
-from app.endpoints import admin_endpoints, login_endpoints, fichaje_endpoints, dbquerys_endpoints
+
 from fastapi.middleware.cors import CORSMiddleware
 
 app.include_router(login_endpoints.router)

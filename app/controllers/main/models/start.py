@@ -1,12 +1,12 @@
-import datetime
+from datetime import datetime
 from pydantic import BaseModel
-
+from bson import ObjectId
 
 class Start(BaseModel):
     start: str = None
-    _id: datetime.datetime = None
     string_id: str = None
     date: str = None
-    finish: str = None
+    finish: str = "-"
+    modified: bool = False
     nightShift: bool
 

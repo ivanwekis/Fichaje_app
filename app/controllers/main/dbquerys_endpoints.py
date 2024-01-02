@@ -2,7 +2,7 @@ import re
 from app.models.modify_user import ModifyUser
 from fastapi import HTTPException, APIRouter, Depends
 from app.models.user import User
-from app.models.register import Register
+from app.controllers.main.models.register import Register
 from app.db_connection import MongoDBConnection
 from app import DB_USER, URI_PASSWORD, DB_NAME, USERS_COLLECTION
 import logging
@@ -16,23 +16,26 @@ router = APIRouter()
 
 mongo_users = MongoDBConnection(DB_USER, URI_PASSWORD, DB_NAME, USERS_COLLECTION)
 mongo_collections = MongoDBConnection(DB_USER, URI_PASSWORD, DB_NAME)
-
+register_list = ["id", "date", "start", "finish", "modified", "nightShift", "reason"]
 
 @router.post("/v2/getregisters/{page}")
 async def get_registers(page: int, user: User, token: str = Depends(oauth2_scheme)):
     get_current_user(token, username=user.username)
     if mongo_users.find_user({"username": user.username}):
         mongo_collections._set_collection(user.username)
-        registers = mongo_collections.find_all_sort_by_date({}, page)
+        registers_doc = mongo_collections.find_12_sort_by_date({}, page)
         registers_list = []
-        for register in registers:
-            if "finish" not in register:
-                register["finish"] = "-"
-            if "modified" not in register:
-                register["modified"] = False
-            register = {"id":register["string_id"], "date":register["date"], "start":register["start"], 
-                        "finish":register["finish"], "modified":register["modified"]}
-            registers_list.append(register)
+        for register_doc in registers_doc:
+            register = Register()
+            register.string_id = register_doc["string_id"]
+            register.date = register_doc["date"]
+            register.start = register_doc["start"]
+            register.finish = register_doc["finish"]
+            if "modified" in register_doc:
+                register.modified = register_doc["modified"]
+            if "nightShift" in register_doc:
+                register.nightShift = register_doc["nightShift"]
+            registers_list.append(register.dict())
         return {"registers": registers_list}
     
 
@@ -41,8 +44,7 @@ async def modify_register(register: Register, token: str = Depends(oauth2_scheme
     user = get_user(token)
     if mongo_users.find_user({"username": user.username}):
         mongo_collections._set_collection(user.username)
-        
-        if mongo_collections.update_one_register({"string_id": register.id}, 
+        if mongo_collections.update_one_register({"string_id": register.string_id}, 
         {"start": register.start, "finish": register.finish, "modified": True}):
             
             return {"message":"The register has been modified successfully."}

@@ -1,5 +1,5 @@
 from fastapi import HTTPException, APIRouter
-from app.models.login_user import LoginUser
+from .models.login_user import LoginUser
 from app.db_connection import MongoDBConnection
 from app import DB_USER, URI_PASSWORD, DB_NAME, USERS_COLLECTION
 from app.security.security import create_access_token
