@@ -1,6 +1,5 @@
-from datetime import datetime
 from pydantic import BaseModel
-from bson import ObjectId
+
 
 class Input(BaseModel):
     input: str = None
@@ -9,4 +8,3 @@ class Input(BaseModel):
     finish: str = "-"
     modified: bool = False
     nightShift: bool
-

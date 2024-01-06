@@ -7,4 +7,4 @@ class ModifyUser(BaseModel):
     password: str = None
     name: str = None
     surname: str = None
-    company: str = None   
+    company: str = None

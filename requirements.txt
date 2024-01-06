@@ -1,4 +1,4 @@
-fastapi[all] 
+fastapi[all]
 pydantic
 pytest
 pytest-cov
