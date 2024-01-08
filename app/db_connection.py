@@ -47,6 +47,9 @@ class MongoDBConnection:
         # Actualiza la información de un usuario que cumple con el filtro
         return self.collection.update_one(filtro, {"$set": nuevo_valor})
 
+    def search_registers(self):
+        return self.collection.find()
+
     def update_user(self, filtro, nuevo_valor):
         # Actualiza la información de un usuario que cumple con el filtro
         return self.collection.update_one(filtro, {"$set": nuevo_valor})

@@ -1,3 +1,4 @@
+from re import search
 from app.models.modify_user import ModifyUser
 from fastapi import APIRouter, Depends
 from app.models.user import User
@@ -27,6 +28,12 @@ async def get_registers(page: int, user: User, token: str = Depends(oauth2_schem
 async def modify_register(register: Register, token: str = Depends(oauth2_scheme)):
     user = get_user(token)
     return registers.modify_register(mongo_users, mongo_collections, user, register)
+
+
+@router.get("/v2/searchregisters/{searchText}")
+async def search_register(searchText: str, token: str = Depends(oauth2_scheme)):
+    user = get_user(token)
+    return registers.search_register(searchText, mongo_collections, user)
 
 
 @router.get("/v2/getregisterslength")
